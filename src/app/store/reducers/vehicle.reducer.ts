@@ -1,16 +1,21 @@
 import { createReducer, on } from '@ngrx/store';
 import * as VehicleActions from '../actions/vehicle.actions';
-import { initialVehicleState } from '../state/vehicle.state';
+import { VehicleState, initialVehicleState } from '../state/vehicle.state';
 
 export const vehicleReducer = createReducer(
     initialVehicleState,
 
     // Load Makes
-    on(VehicleActions.loadMakes, state => ({
-        ...state,
-        makesLoading: true,
-        makesError: null
-    })),
+    on(VehicleActions.loadMakes, state => {
+        if (state.makes.length > 0) {
+            return state;
+        }
+        return {
+            ...state,
+            makesLoading: true,
+            makesError: null
+        };
+    }),
 
     on(VehicleActions.loadMakesSuccess, (state, { makes }) => ({
         ...state,
@@ -25,11 +30,21 @@ export const vehicleReducer = createReducer(
         makesError: error
     })),
 
-    // Filter Makes
+    // Filter Makes - Búsqueda mejorada
     on(VehicleActions.filterMakes, (state, { searchTerm }) => {
-        const filtered = state.makes.filter(make =>
-            make.Make_Name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        const normalizedSearch = searchTerm
+            .toLowerCase()
+            .trim()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, ''); // Remover acentos
+
+        const filtered = state.makes.filter(make => {
+            const normalizedMake = make.Make_Name.toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '');
+            return normalizedMake.includes(normalizedSearch);
+        });
+
         return {
             ...state,
             filteredMakes: filtered

@@ -49,7 +49,7 @@ export const loadVehicleTypesFailure = createAction(
 // Actions para cargar modelos
 export const loadModels = createAction(
     '[Vehicle Detail] Load Models',
-    props<{ makeName: string }>()
+    props<{ makeId: number }>()
 );
 
 export const loadModelsSuccess = createAction(
@@ -62,7 +62,6 @@ export const loadModelsFailure = createAction(
     props<{ error: string }>()
 );
 
-// Action para limpiar datos al salir del detalle
 export const clearVehicleDetail = createAction(
     '[Vehicle Detail] Clear Detail'
 );

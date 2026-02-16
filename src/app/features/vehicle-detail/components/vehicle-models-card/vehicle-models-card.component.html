@@ -1,0 +1,37 @@
+<mat-card class="info-card">
+    <mat-card-header>
+        <mat-card-title>
+            <mat-icon>list</mat-icon>
+            Available Models
+        </mat-card-title>
+    </mat-card-header>
+    <mat-divider></mat-divider>
+    <mat-card-content>
+        @if (isLoading()) {
+        <div class="loading">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Loading models...</p>
+        </div>
+        } @else if (models().length === 0) {
+        <div class="empty-state">
+            <mat-icon>info</mat-icon>
+            <p>No models available</p>
+        </div>
+        } @else {
+        <mat-list class="models-list">
+            @for (model of models(); track model.Model_ID; let idx = $index) {
+            <mat-list-item>
+                <span matListItemTitle class="model-number">{{ idx + 1 }}</span>
+                <div matListItemLine class="model-info">
+                    <mat-icon>check_circle</mat-icon>
+                    <span class="model-name">{{ model.Model_Name }}</span>
+                </div>
+            </mat-list-item>
+            @if (!$last) {
+            <mat-divider></mat-divider>
+            }
+            }
+        </mat-list>
+        }
+    </mat-card-content>
+</mat-card>

@@ -1,17 +1,39 @@
 .vehicle-detail-container {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 2rem 1rem;
   min-height: 100vh;
+  background: linear-gradient(to bottom, #f5f7fa 0%, #ffffff 400px);
 
   .header {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
 
     .back-button {
       flex-shrink: 0;
+      background: white;
+      color: #1976d2;
+      box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2);
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: #1976d2;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(25, 118, 210, 0.3);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
     }
 
     .title-section {
@@ -19,125 +41,93 @@
 
       h1 {
         margin: 0;
-        font-size: 2rem;
-        font-weight: 500;
-        color: #1976d2;
+        font-size: 2.5rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
 
       .subtitle {
         margin: 0.5rem 0 0 0;
         color: rgba(0, 0, 0, 0.6);
-        font-size: 1rem;
+        font-size: 1.1rem;
+        font-weight: 400;
       }
     }
   }
 
   .content {
     display: grid;
-    gap: 1.5rem;
+    gap: 2rem;
+    grid-template-columns: 1fr;
 
-    .info-card {
-      mat-card-header {
-        mat-card-title {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          font-size: 1.25rem;
-          font-weight: 500;
-
-          mat-icon {
-            color: #1976d2;
-          }
-        }
-      }
-
-      mat-card-content {
-        padding: 1.5rem 0;
-
-        .loading,
-        .empty-state {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 2rem;
-          text-align: center;
-
-          mat-icon {
-            font-size: 48px;
-            width: 48px;
-            height: 48px;
-            margin-bottom: 1rem;
-            color: rgba(0, 0, 0, 0.38);
-          }
-
-          p {
-            margin: 0;
-            color: rgba(0, 0, 0, 0.6);
-          }
-        }
-
-        .chips-container {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-          padding: 1rem;
-
-          mat-chip {
-            background-color: #e3f2fd;
-            color: #1976d2;
-            font-weight: 500;
-          }
-        }
-
-        mat-list {
-          padding: 0;
-
-          mat-list-item {
-            height: auto;
-            min-height: 48px;
-            padding: 0.75rem 1rem;
-
-            mat-icon {
-              color: #4caf50;
-            }
-
-            span {
-              font-size: 1rem;
-            }
-          }
-        }
-      }
+    @media (min-width: 900px) {
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+  .vehicle-detail-container {
+    padding: 1.5rem 1rem;
+
+    .header {
+      gap: 1rem;
+      margin-bottom: 2rem;
+
+      .back-button {
+        width: 48px;
+        height: 48px;
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+      }
+
+      .title-section {
+        h1 {
+          font-size: 2rem;
+        }
+
+        .subtitle {
+          font-size: 1rem;
+        }
+      }
+    }
+
+    .content {
+      gap: 1.5rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
   .vehicle-detail-container {
     padding: 1rem 0.5rem;
 
     .header {
+      .back-button {
+        width: 44px;
+        height: 44px;
+      }
+
       .title-section {
         h1 {
-          font-size: 1.5rem;
+          font-size: 1.75rem;
         }
 
         .subtitle {
-          font-size: 0.875rem;
+          font-size: 0.9rem;
         }
       }
     }
 
     .content {
       gap: 1rem;
-
-      .info-card {
-        mat-card-content {
-          .chips-container {
-            padding: 0.5rem;
-          }
-        }
-      }
     }
   }
 }

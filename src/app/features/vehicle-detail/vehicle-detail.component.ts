@@ -4,31 +4,27 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 
 // Angular Material
-import { MatCardModule } from '@angular/material/card';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatListModule } from '@angular/material/list';
 
 // Store
 import * as VehicleActions from '../../store/actions/vehicle.actions';
 import * as VehicleSelectors from '../../store/selectors/vehicle.selectors';
 import { VehicleType, VehicleModel } from '../../core/interfaces/vehicle.interface';
 
+// Subcomponents
+import { VehicleTypesCardComponent } from './components/vehicle-types-card/vehicle-types-card.component';
+import { VehicleModelsCardComponent } from './components/vehicle-models-card/vehicle-models-card.component';
+
 @Component({
   selector: 'app-vehicle-detail',
   standalone: true,
   imports: [
     CommonModule,
-    MatCardModule,
-    MatProgressSpinnerModule,
-    MatChipsModule,
     MatIconModule,
     MatButtonModule,
-    MatDividerModule,
-    MatListModule
+    VehicleTypesCardComponent,
+    VehicleModelsCardComponent
   ],
   templateUrl: './vehicle-detail.component.html',
   styleUrl: './vehicle-detail.component.scss'
@@ -46,17 +42,12 @@ export class VehicleDetailComponent implements OnInit, OnDestroy {
   modelsLoading = signal<boolean>(false);
 
   ngOnInit(): void {
-    // Obtener el makeId de la ruta
     const makeId = Number(this.route.snapshot.paramMap.get('id'));
 
-    // Suscribirse a los datos del store
     this.store.select(VehicleSelectors.selectSelectedMake).subscribe(make => {
       this.selectedMake.set(make);
 
-      // Si no hay marca seleccionada, cargar desde la ruta
       if (!make && makeId) {
-        // Aquí necesitaríamos obtener el nombre de la marca
-        // Por ahora, redirigimos a la lista si no hay datos
         this.router.navigate(['/']);
       }
     });
@@ -69,9 +60,11 @@ export class VehicleDetailComponent implements OnInit, OnDestroy {
       this.models.set(models);
     });
 
-    this.store.select(VehicleSelectors.selectVehicleTypesLoading).subscribe(loading => {
-      this.typesLoading.set(loading);
-    });
+    this.store
+      .select(VehicleSelectors.selectVehicleTypesLoading)
+      .subscribe(loading => {
+        this.typesLoading.set(loading);
+      });
 
     this.store.select(VehicleSelectors.selectModelsLoading).subscribe(loading => {
       this.modelsLoading.set(loading);
@@ -79,7 +72,6 @@ export class VehicleDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Limpiar los datos del detalle al salir
     this.store.dispatch(VehicleActions.clearVehicleDetail());
   }
 

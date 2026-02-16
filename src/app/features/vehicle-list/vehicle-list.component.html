@@ -1,15 +1,24 @@
 <div class="vehicle-list-container">
     <div class="header">
-        <h1>Vehicle Makes</h1>
-        <p class="subtitle">Select a vehicle make to view details</p>
+        <div class="title-section">
+            <h1>Vehicle Makes Directory</h1>
+            <p class="subtitle">Explore and discover vehicle manufacturers worldwide</p>
+        </div>
+        @if (!isLoading()) {
+        <div class="stats">
+            <mat-icon>inventory</mat-icon>
+            <span>{{ resultsCount() }}</span>
+        </div>
+        }
     </div>
 
     <mat-form-field class="search-field" appearance="outline">
         <mat-label>Search vehicle makes</mat-label>
-        <input matInput [formControl]="searchControl" placeholder="Type to search..." autocomplete="off" />
+        <input matInput [formControl]="searchControl" placeholder="Try 'Honda', 'BMW', 'Toyota'..."
+            autocomplete="off" />
         <mat-icon matPrefix>search</mat-icon>
         @if (searchControl.value) {
-        <button mat-icon-button matSuffix (click)="searchControl.setValue('')" aria-label="Clear search">
+        <button mat-icon-button matSuffix (click)="clearSearch()" matTooltip="Clear search" aria-label="Clear search">
             <mat-icon>close</mat-icon>
         </button>
         }
@@ -17,27 +26,49 @@
 
     @if (isLoading()) {
     <div class="loading-container">
-        <mat-spinner diameter="50"></mat-spinner>
-        <p>Loading vehicle makes...</p>
+        <mat-spinner diameter="60"></mat-spinner>
+        <p class="loading-text">Loading vehicle makes...</p>
+        <p class="loading-subtext">This may take a few seconds</p>
     </div>
     } @else if (error()) {
-    <div class="error-container">
-        <mat-icon color="warn">error</mat-icon>
-        <p>{{ error() }}</p>
-    </div>
+    <mat-card class="error-card">
+        <mat-card-content>
+            <div class="error-container">
+                <mat-icon color="warn">error_outline</mat-icon>
+                <h3>Oops! Something went wrong</h3>
+                <p>{{ error() }}</p>
+                <button mat-raised-button color="primary" (click)="ngOnInit()">
+                    <mat-icon>refresh</mat-icon>
+                    Try Again
+                </button>
+            </div>
+        </mat-card-content>
+    </mat-card>
     } @else if (noResults()) {
-    <div class="no-results">
-        <mat-icon>search_off</mat-icon>
-        <p>No vehicle makes found for "{{ searchControl.value }}"</p>
-    </div>
+    <mat-card class="no-results-card">
+        <mat-card-content>
+            <div class="no-results">
+                <mat-icon>search_off</mat-icon>
+                <h3>No matches found</h3>
+                <p>We couldn't find any vehicle makes matching <strong>"{{ searchControl.value }}"</strong></p>
+                <button mat-stroked-button (click)="clearSearch()">
+                    Clear search
+                </button>
+            </div>
+        </mat-card-content>
+    </mat-card>
     } @else {
-    <cdk-virtual-scroll-viewport itemSize="72" class="vehicle-scroll-viewport">
+    <cdk-virtual-scroll-viewport itemSize="80" class="vehicle-scroll-viewport">
         <mat-card *cdkVirtualFor="let make of filteredMakes(); trackBy: trackByMakeId" class="vehicle-card"
             (click)="onSelectMake(make)">
             <mat-card-content>
                 <div class="card-content">
-                    <span class="make-name">{{ make.Make_Name }}</span>
-                    <mat-icon>chevron_right</mat-icon>
+                    <div class="make-info">
+                        <mat-icon class="make-icon">directions_car</mat-icon>
+                        <span class="make-name"
+                            [innerHTML]="make.Make_Name | highlight: (searchControl.value || '')"></span>
+                    </div>
+                    <mat-icon class="arrow-icon">arrow_forward</mat-icon>
                 </div>
             </mat-card-content>
         </mat-card>

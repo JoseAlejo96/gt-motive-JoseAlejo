@@ -35,9 +35,9 @@ export class VehicleApiService {
     /**
      * Obtiene los modelos para una marca específica
      */
-    getModelsForMake(makeName: string): Observable<VehicleModelResponse> {
+    getModelsForMakeId(makeId: number): Observable<VehicleModelResponse> {
         return this.http.get<VehicleModelResponse>(
-            `${this.baseUrl}/GetModelsForMake/${makeName}?format=json`
+            `${this.baseUrl}/GetModelsForMakeId/${makeId}?format=json`
         );
     }
 }

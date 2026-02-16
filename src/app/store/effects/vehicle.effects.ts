@@ -69,8 +69,8 @@ export class VehicleEffects {
     loadModels$ = createEffect(() =>
         this.actions$.pipe(
             ofType(VehicleActions.loadModels),
-            switchMap(({ makeName }) =>
-                this.vehicleApiService.getModelsForMake(makeName).pipe(
+            switchMap(({ makeId }) =>
+                this.vehicleApiService.getModelsForMakeId(makeId).pipe(
                     map(response =>
                         VehicleActions.loadModelsSuccess({ models: response.Results })
                     ),
@@ -92,9 +92,9 @@ export class VehicleEffects {
     selectMake$ = createEffect(() =>
         this.actions$.pipe(
             ofType(VehicleActions.selectMake),
-            switchMap(({ makeId, makeName }) => [
+            switchMap(({ makeId }) => [
                 VehicleActions.loadVehicleTypes({ makeId }),
-                VehicleActions.loadModels({ makeName })
+                VehicleActions.loadModels({ makeId })
             ])
         )
     );

@@ -1,81 +1,19 @@
 <div class="vehicle-detail-container">
     <div class="header">
-        <button mat-icon-button (click)="goBack()" class="back-button">
+        <button mat-fab class="back-button" (click)="goBack()" aria-label="Go back">
             <mat-icon>arrow_back</mat-icon>
         </button>
         @if (selectedMake()) {
         <div class="title-section">
             <h1>{{ selectedMake()!.name }}</h1>
-            <p class="subtitle">Vehicle Information</p>
+            <p class="subtitle">Complete vehicle information and specifications</p>
         </div>
         }
     </div>
 
     <div class="content">
-        <!-- Vehicle Types Section -->
-        <mat-card class="info-card">
-            <mat-card-header>
-                <mat-card-title>
-                    <mat-icon>directions_car</mat-icon>
-                    Vehicle Types
-                </mat-card-title>
-            </mat-card-header>
-            <mat-divider></mat-divider>
-            <mat-card-content>
-                @if (typesLoading()) {
-                <div class="loading">
-                    <mat-spinner diameter="40"></mat-spinner>
-                    <p>Loading vehicle types...</p>
-                </div>
-                } @else if (vehicleTypes().length === 0) {
-                <div class="empty-state">
-                    <mat-icon>info</mat-icon>
-                    <p>No vehicle types available</p>
-                </div>
-                } @else {
-                <div class="chips-container">
-                    @for (type of vehicleTypes(); track type.VehicleTypeId) {
-                    <mat-chip>{{ type.VehicleTypeName }}</mat-chip>
-                    }
-                </div>
-                }
-            </mat-card-content>
-        </mat-card>
+        <app-vehicle-types-card [vehicleTypes]="vehicleTypes()" [isLoading]="typesLoading()" />
 
-        <!-- Models Section -->
-        <mat-card class="info-card">
-            <mat-card-header>
-                <mat-card-title>
-                    <mat-icon>list</mat-icon>
-                    Available Models
-                </mat-card-title>
-            </mat-card-header>
-            <mat-divider></mat-divider>
-            <mat-card-content>
-                @if (modelsLoading()) {
-                <div class="loading">
-                    <mat-spinner diameter="40"></mat-spinner>
-                    <p>Loading models...</p>
-                </div>
-                } @else if (models().length === 0) {
-                <div class="empty-state">
-                    <mat-icon>info</mat-icon>
-                    <p>No models available</p>
-                </div>
-                } @else {
-                <mat-list>
-                    @for (model of models(); track model.Model_ID) {
-                    <mat-list-item>
-                        <mat-icon matListItemIcon>check_circle</mat-icon>
-                        <span matListItemTitle>{{ model.Model_Name }}</span>
-                    </mat-list-item>
-                    @if (!$last) {
-                    <mat-divider></mat-divider>
-                    }
-                    }
-                </mat-list>
-                }
-            </mat-card-content>
-        </mat-card>
+        <app-vehicle-models-card [models]="models()" [isLoading]="modelsLoading()" />
     </div>
 </div>

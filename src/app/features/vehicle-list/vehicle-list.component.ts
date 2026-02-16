@@ -12,11 +12,16 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 // Store
 import * as VehicleActions from '../../store/actions/vehicle.actions';
 import * as VehicleSelectors from '../../store/selectors/vehicle.selectors';
 import { VehicleMake } from '../../core/interfaces/vehicle.interface';
+
+// Pipes
+import { HighlightPipe } from '../../shared/pipes/highlight.pipe';
 
 @Component({
   selector: 'app-vehicle-list',
@@ -29,7 +34,10 @@ import { VehicleMake } from '../../core/interfaces/vehicle.interface';
     MatProgressSpinnerModule,
     MatCardModule,
     ScrollingModule,
-    MatIconModule
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+    HighlightPipe
   ],
   templateUrl: './vehicle-list.component.html',
   styleUrl: './vehicle-list.component.scss'
@@ -42,22 +50,37 @@ export class VehicleListComponent implements OnInit {
   filteredMakes = signal<VehicleMake[]>([]);
   isLoading = signal<boolean>(false);
   error = signal<string | null>(null);
+  totalMakes = signal<number>(0);
 
   // Form Control para búsqueda
   searchControl = new FormControl('');
 
-  // Computed para mostrar mensaje cuando no hay resultados
+  // Computed signals
   noResults = computed(() => {
-    return !this.isLoading() && this.filteredMakes().length === 0 && this.searchControl.value !== '';
+    return (
+      !this.isLoading() &&
+      this.filteredMakes().length === 0 &&
+      this.searchControl.value !== ''
+    );
+  });
+
+  resultsCount = computed(() => {
+    const search = this.searchControl.value;
+    if (!search) {
+      return `${this.totalMakes()} vehicle makes available`;
+    }
+    return `${this.filteredMakes().length} of ${this.totalMakes()} makes found`;
   });
 
   ngOnInit(): void {
-    // Cargar marcas al iniciar
     this.store.dispatch(VehicleActions.loadMakes());
 
-    // Suscribirse a los selectores del store
     this.store.select(VehicleSelectors.selectFilteredMakes).subscribe(makes => {
       this.filteredMakes.set(makes);
+    });
+
+    this.store.select(VehicleSelectors.selectAllMakes).subscribe(makes => {
+      this.totalMakes.set(makes.length);
     });
 
     this.store.select(VehicleSelectors.selectMakesLoading).subscribe(loading => {
@@ -68,20 +91,15 @@ export class VehicleListComponent implements OnInit {
       this.error.set(error);
     });
 
-    // Configurar búsqueda con debounce
     this.searchControl.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged()
-      )
+      .pipe(debounceTime(300), distinctUntilChanged())
       .subscribe(searchTerm => {
-        this.store.dispatch(VehicleActions.filterMakes({ searchTerm: searchTerm || '' }));
+        this.store.dispatch(
+          VehicleActions.filterMakes({ searchTerm: searchTerm || '' })
+        );
       });
   }
 
-  /**
-   * Navegar al detalle de una marca
-   */
   onSelectMake(make: VehicleMake): void {
     this.store.dispatch(
       VehicleActions.selectMake({
@@ -92,10 +110,11 @@ export class VehicleListComponent implements OnInit {
     this.router.navigate(['/vehicle', make.Make_ID]);
   }
 
-  /**
-   * Track by para optimizar rendering del virtual scroll
-   */
   trackByMakeId(index: number, make: VehicleMake): number {
     return make.Make_ID;
+  }
+
+  clearSearch(): void {
+    this.searchControl.setValue('');
   }
 }
