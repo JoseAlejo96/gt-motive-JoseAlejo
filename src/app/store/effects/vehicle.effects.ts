@@ -1,21 +1,28 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { map, catchError, switchMap } from 'rxjs/operators';
+import { map, catchError, switchMap, withLatestFrom, filter } from 'rxjs/operators';
 import { VehicleApiService } from '../../core/services/vehicle-api.service';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
 import * as VehicleActions from '../actions/vehicle.actions';
+import * as VehicleSelectors from '../selectors/vehicle.selectors';
 
 @Injectable()
 export class VehicleEffects {
     private readonly actions$ = inject(Actions);
+    private readonly store = inject(Store);
     private readonly vehicleApiService = inject(VehicleApiService);
+    private readonly errorHandler = inject(ErrorHandlerService);
 
     /**
-     * Effect: Cargar todas las marcas
+     * Effect: Cargar marcas solo si no están en el store
      */
     loadMakes$ = createEffect(() =>
         this.actions$.pipe(
             ofType(VehicleActions.loadMakes),
+            withLatestFrom(this.store.select(VehicleSelectors.selectAllMakes)),
+            filter(([_, makes]) => makes.length === 0),
             switchMap(() =>
                 this.vehicleApiService.getAllMakes().pipe(
                     map(response =>
@@ -24,7 +31,7 @@ export class VehicleEffects {
                     catchError(error =>
                         of(
                             VehicleActions.loadMakesFailure({
-                                error: error.message || 'Error loading makes'
+                                error: this.errorHandler.handleError(error)
                             })
                         )
                     )
@@ -47,7 +54,7 @@ export class VehicleEffects {
                     catchError(error =>
                         of(
                             VehicleActions.loadVehicleTypesFailure({
-                                error: error.message || 'Error loading vehicle types'
+                                error: this.errorHandler.handleError(error)
                             })
                         )
                     )
@@ -70,7 +77,7 @@ export class VehicleEffects {
                     catchError(error =>
                         of(
                             VehicleActions.loadModelsFailure({
-                                error: error.message || 'Error loading models'
+                                error: this.errorHandler.handleError(error)
                             })
                         )
                     )
