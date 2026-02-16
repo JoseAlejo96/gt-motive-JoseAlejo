@@ -7,6 +7,8 @@ import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 
 import { routes } from './app.routes';
+import { vehicleReducer } from './store/reducers/vehicle.reducer';
+import { VehicleEffects } from './store/effects/vehicle.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,8 +16,10 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     provideHttpClient(withFetch()),
-    provideStore(),
-    provideEffects(),
+    provideStore({
+      vehicle: vehicleReducer
+    }),
+    provideEffects([VehicleEffects]),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),
