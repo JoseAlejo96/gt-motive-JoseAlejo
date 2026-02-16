@@ -1,0 +1,46 @@
+<div class="vehicle-list-container">
+    <div class="header">
+        <h1>Vehicle Makes</h1>
+        <p class="subtitle">Select a vehicle make to view details</p>
+    </div>
+
+    <mat-form-field class="search-field" appearance="outline">
+        <mat-label>Search vehicle makes</mat-label>
+        <input matInput [formControl]="searchControl" placeholder="Type to search..." autocomplete="off" />
+        <mat-icon matPrefix>search</mat-icon>
+        @if (searchControl.value) {
+        <button mat-icon-button matSuffix (click)="searchControl.setValue('')" aria-label="Clear search">
+            <mat-icon>close</mat-icon>
+        </button>
+        }
+    </mat-form-field>
+
+    @if (isLoading()) {
+    <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading vehicle makes...</p>
+    </div>
+    } @else if (error()) {
+    <div class="error-container">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ error() }}</p>
+    </div>
+    } @else if (noResults()) {
+    <div class="no-results">
+        <mat-icon>search_off</mat-icon>
+        <p>No vehicle makes found for "{{ searchControl.value }}"</p>
+    </div>
+    } @else {
+    <cdk-virtual-scroll-viewport itemSize="72" class="vehicle-scroll-viewport">
+        <mat-card *cdkVirtualFor="let make of filteredMakes(); trackBy: trackByMakeId" class="vehicle-card"
+            (click)="onSelectMake(make)">
+            <mat-card-content>
+                <div class="card-content">
+                    <span class="make-name">{{ make.Make_Name }}</span>
+                    <mat-icon>chevron_right</mat-icon>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </cdk-virtual-scroll-viewport>
+    }
+</div>
