@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 // Angular Material
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -46,16 +47,29 @@ export class VehicleListComponent implements OnInit {
   private readonly store = inject(Store);
   private readonly router = inject(Router);
 
-  // Signals
-  filteredMakes = signal<VehicleMake[]>([]);
-  isLoading = signal<boolean>(false);
-  error = signal<string | null>(null);
-  totalMakes = signal<number>(0);
+  // Signals desde el store usando toSignal
+  filteredMakes = toSignal(
+    this.store.select(VehicleSelectors.selectFilteredMakes),
+    { initialValue: [] }
+  );
 
-  // Form Control para búsqueda
+  totalMakes = toSignal(
+    this.store.select(VehicleSelectors.selectAllMakes),
+    { initialValue: [] }
+  );
+
+  isLoading = toSignal(
+    this.store.select(VehicleSelectors.selectMakesLoading),
+    { initialValue: false }
+  );
+
+  error = toSignal(
+    this.store.select(VehicleSelectors.selectMakesError),
+    { initialValue: null }
+  );
+
   searchControl = new FormControl('');
 
-  // Computed signals
   noResults = computed(() => {
     return (
       !this.isLoading() &&
@@ -66,30 +80,18 @@ export class VehicleListComponent implements OnInit {
 
   resultsCount = computed(() => {
     const search = this.searchControl.value;
+    const total = this.totalMakes().length;
     if (!search) {
-      return `${this.totalMakes()} vehicle makes available`;
+      return `${total} vehicle makes available`;
     }
-    return `${this.filteredMakes().length} of ${this.totalMakes()} makes found`;
+    return `${this.filteredMakes().length} of ${total} makes found`;
   });
 
   ngOnInit(): void {
+    this.store.dispatch(VehicleActions.filterMakes({ searchTerm: '' }));
+    this.searchControl.setValue('', { emitEvent: false });
+
     this.store.dispatch(VehicleActions.loadMakes());
-
-    this.store.select(VehicleSelectors.selectFilteredMakes).subscribe(makes => {
-      this.filteredMakes.set(makes);
-    });
-
-    this.store.select(VehicleSelectors.selectAllMakes).subscribe(makes => {
-      this.totalMakes.set(makes.length);
-    });
-
-    this.store.select(VehicleSelectors.selectMakesLoading).subscribe(loading => {
-      this.isLoading.set(loading);
-    });
-
-    this.store.select(VehicleSelectors.selectMakesError).subscribe(error => {
-      this.error.set(error);
-    });
 
     this.searchControl.valueChanges
       .pipe(debounceTime(300), distinctUntilChanged())
@@ -110,7 +112,7 @@ export class VehicleListComponent implements OnInit {
     this.router.navigate(['/vehicle', make.Make_ID]);
   }
 
-  trackByMakeId(index: number, make: VehicleMake): number {
+  trackByMakeId(_index: number, make: VehicleMake): number {
     return make.Make_ID;
   }
 

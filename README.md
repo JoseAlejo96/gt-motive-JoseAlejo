@@ -1,59 +1,53 @@
-# GtMotiveJoseAlejo
+# GT Motive - Vehicle Information SPA
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.20.
+Angular 19 application for browsing vehicle manufacturers and their specifications using the NHTSA vPIC API.
 
-## Development server
-
-To start a local development server, run:
-
+## 📦 Installation
 ```bash
-ng serve
+# Install dependencies
+npm install
+
+# Run development server
+npm start
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## 🏗️ Architecture
 
-## Code scaffolding
+### SOLID Principles Applied
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- **Single Responsibility**: Each component, service, and module has one clear purpose
+- **Open/Closed**: NgRx patterns allow extension without modification
+- **Liskov Substitution**: Components are interchangeable through interfaces
+- **Interface Segregation**: Specific interfaces for different data types
+- **Dependency Inversion**: Services injected through Angular DI
 
-```bash
-ng generate component component-name
+### Project Structure
+```
+src/app/
+├── core/                    # Singleton services and interfaces
+│   ├── services/           # API and business logic services
+│   └── interfaces/         # TypeScript interfaces
+├── shared/                 # Reusable components and pipes
+│   ├── components/        # Shared UI components
+│   └── pipes/            # Custom pipes (highlight, etc.)
+├── features/              # Feature modules
+│   ├── vehicle-list/     # Main list view
+│   └── vehicle-detail/   # Detail view with subcomponents
+└── store/                # NgRx state management
+    ├── actions/         # Action creators
+    ├── reducers/       # State reducers
+    ├── effects/       # Side effects handlers
+    ├── selectors/    # State selectors
+    └── state/       # State interfaces
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🌐 API
 
-```bash
-ng generate --help
-```
+This application uses the [NHTSA vPIC API](https://vpic.nhtsa.dot.gov/api/):
+- `GET /vehicles/GetAllMakes` - Fetch all vehicle makes
+- `GET /vehicles/GetVehicleTypesForMakeId/{id}` - Get vehicle types
+- `GET /vehicles/GetModelsForMakeId/{id}` - Get available models
 
-## Building
+## 👤 Author
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+**Jose Alejo**

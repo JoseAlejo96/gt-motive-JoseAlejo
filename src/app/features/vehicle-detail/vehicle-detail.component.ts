@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 // Angular Material
 import { MatIconModule } from '@angular/material/icon';
@@ -10,7 +11,6 @@ import { MatButtonModule } from '@angular/material/button';
 // Store
 import * as VehicleActions from '../../store/actions/vehicle.actions';
 import * as VehicleSelectors from '../../store/selectors/vehicle.selectors';
-import { VehicleType, VehicleModel } from '../../core/interfaces/vehicle.interface';
 
 // Subcomponents
 import { VehicleTypesCardComponent } from './components/vehicle-types-card/vehicle-types-card.component';
@@ -34,41 +34,38 @@ export class VehicleDetailComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  // Signals
-  selectedMake = signal<{ id: number; name: string } | null>(null);
-  vehicleTypes = signal<VehicleType[]>([]);
-  models = signal<VehicleModel[]>([]);
-  typesLoading = signal<boolean>(false);
-  modelsLoading = signal<boolean>(false);
+  // Signals desde el store
+  selectedMake = toSignal(
+    this.store.select(VehicleSelectors.selectSelectedMake),
+    { initialValue: null }
+  );
+
+  vehicleTypes = toSignal(
+    this.store.select(VehicleSelectors.selectVehicleTypes),
+    { initialValue: [] }
+  );
+
+  models = toSignal(
+    this.store.select(VehicleSelectors.selectModels),
+    { initialValue: [] }
+  );
+
+  typesLoading = toSignal(
+    this.store.select(VehicleSelectors.selectVehicleTypesLoading),
+    { initialValue: false }
+  );
+
+  modelsLoading = toSignal(
+    this.store.select(VehicleSelectors.selectModelsLoading),
+    { initialValue: false }
+  );
 
   ngOnInit(): void {
     const makeId = Number(this.route.snapshot.paramMap.get('id'));
 
-    this.store.select(VehicleSelectors.selectSelectedMake).subscribe(make => {
-      this.selectedMake.set(make);
-
-      if (!make && makeId) {
-        this.router.navigate(['/']);
-      }
-    });
-
-    this.store.select(VehicleSelectors.selectVehicleTypes).subscribe(types => {
-      this.vehicleTypes.set(types);
-    });
-
-    this.store.select(VehicleSelectors.selectModels).subscribe(models => {
-      this.models.set(models);
-    });
-
-    this.store
-      .select(VehicleSelectors.selectVehicleTypesLoading)
-      .subscribe(loading => {
-        this.typesLoading.set(loading);
-      });
-
-    this.store.select(VehicleSelectors.selectModelsLoading).subscribe(loading => {
-      this.modelsLoading.set(loading);
-    });
+    if (!this.selectedMake() && makeId) {
+      this.router.navigate(['/']);
+    }
   }
 
   ngOnDestroy(): void {

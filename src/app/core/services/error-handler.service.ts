@@ -5,19 +5,14 @@ import { HttpErrorResponse } from '@angular/common/http';
     providedIn: 'root'
 })
 export class ErrorHandlerService {
-    /**
-     * Procesa errores HTTP y devuelve un mensaje amigable
-     */
     handleError(error: HttpErrorResponse): string {
-        let errorMessage = 'An error occurred';
-
-        if (error.error instanceof ErrorEvent) {
-            errorMessage = `Client Error: ${error.error.message}`;
-        } else {
-            errorMessage = `Server Error: ${error.status} - ${error.message}`;
+        // Si la URL contiene Error/404.html, la API no tiene datos
+        if (error.url?.includes('Error/404.html')) {
+            return 'No data available for this vehicle make';
         }
 
-        console.error('Error details:', error);
-        return errorMessage;
+        const message = `Server Error: ${error.status} - ${error.message}`;
+        console.error('HTTP Error:', error);
+        return message;
     }
 }

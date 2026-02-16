@@ -9,7 +9,7 @@ export class HighlightPipe implements PipeTransform {
     constructor(private sanitizer: DomSanitizer) { }
 
     transform(value: string, search: string): SafeHtml {
-        if (!search || !value) {
+        if (!search?.trim() || !value) {
             return value;
         }
 
@@ -20,20 +20,20 @@ export class HighlightPipe implements PipeTransform {
             .toLowerCase()
             .trim();
 
-        if (!normalizedSearch) {
+        // Buscar la posición de la coincidencia en el texto normalizado
+        const index = normalizedValue.toLowerCase().indexOf(normalizedSearch);
+
+        if (index === -1) {
             return value;
         }
 
-        const regex = new RegExp(`(${this.escapeRegex(normalizedSearch)})`, 'gi');
-        const highlighted = value.replace(
-            regex,
-            '<mark class="highlight">$1</mark>'
-        );
+        // Extraer la parte exacta del texto original
+        const before = value.substring(0, index);
+        const match = value.substring(index, index + normalizedSearch.length);
+        const after = value.substring(index + normalizedSearch.length);
 
-        return this.sanitizer.sanitize(1, highlighted) || value;
-    }
+        const highlighted = `${before}<mark class="highlight">${match}</mark>${after}`;
 
-    private escapeRegex(text: string): string {
-        return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return this.sanitizer.bypassSecurityTrustHtml(highlighted);
     }
 }
