@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -21,9 +21,6 @@ import * as VehicleActions from '../../store/actions/vehicle.actions';
 import * as VehicleSelectors from '../../store/selectors/vehicle.selectors';
 import { VehicleMake } from '../../core/interfaces/vehicle.interface';
 
-// Pipes
-import { HighlightPipe } from '../../shared/pipes/highlight.pipe';
-
 @Component({
   selector: 'app-vehicle-list',
   standalone: true,
@@ -37,8 +34,7 @@ import { HighlightPipe } from '../../shared/pipes/highlight.pipe';
     ScrollingModule,
     MatIconModule,
     MatButtonModule,
-    MatTooltipModule,
-    HighlightPipe
+    MatTooltipModule
   ],
   templateUrl: './vehicle-list.component.html',
   styleUrl: './vehicle-list.component.scss'

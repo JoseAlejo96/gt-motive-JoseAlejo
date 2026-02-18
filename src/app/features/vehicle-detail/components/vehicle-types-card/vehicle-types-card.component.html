@@ -10,7 +10,7 @@
         @if (isLoading()) {
         <div class="loading">
             <mat-spinner diameter="40"></mat-spinner>
-            <p>Loading vehicle types...</p>
+            <p>Loading...</p>
         </div>
         } @else if (vehicleTypes().length === 0) {
         <div class="empty-state">
@@ -18,12 +18,12 @@
             <p>No vehicle types available</p>
         </div>
         } @else {
-        <div class="chips-container">
+        <div class="types-list">
             @for (type of vehicleTypes(); track type.VehicleTypeId) {
-            <mat-chip highlighted>
-                <mat-icon matChipAvatar>category</mat-icon>
-                {{ type.VehicleTypeName }}
-            </mat-chip>
+            <div class="type-item">
+                <mat-icon>check_circle</mat-icon>
+                <span>{{ type.VehicleTypeName }}</span>
+            </div>
             }
         </div>
         }

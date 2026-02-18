@@ -1,133 +1,45 @@
 .vehicle-detail-container {
-  max-width: 1100px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 2rem 1rem;
-  min-height: 100vh;
-  background: linear-gradient(to bottom, #f5f7fa 0%, #ffffff 400px);
 
   .header {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e0e0e0;
 
     .back-button {
-      flex-shrink: 0;
-      background: white;
       color: #1976d2;
-      box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2);
-      transition: all 0.3s ease;
 
       &:hover {
-        background: #1976d2;
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(25, 118, 210, 0.3);
-      }
-
-      &:active {
-        transform: translateY(0);
-      }
-
-      mat-icon {
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
+        background: #e3f2fd;
       }
     }
 
     .title-section {
-      flex: 1;
-
       h1 {
         margin: 0;
-        font-size: 2.5rem;
-        font-weight: 600;
-        background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        font-size: 1.75rem;
+        color: #333;
       }
 
       .subtitle {
-        margin: 0.5rem 0 0 0;
-        color: rgba(0, 0, 0, 0.6);
-        font-size: 1.1rem;
-        font-weight: 400;
+        margin: 0.25rem 0 0;
+        color: #666;
+        font-size: 0.95rem;
       }
     }
   }
 
   .content {
     display: grid;
-    gap: 2rem;
-    grid-template-columns: 1fr;
+    gap: 1.5rem;
 
-    @media (min-width: 900px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .vehicle-detail-container {
-    padding: 1.5rem 1rem;
-
-    .header {
-      gap: 1rem;
-      margin-bottom: 2rem;
-
-      .back-button {
-        width: 48px;
-        height: 48px;
-
-        mat-icon {
-          font-size: 20px;
-          width: 20px;
-          height: 20px;
-        }
-      }
-
-      .title-section {
-        h1 {
-          font-size: 2rem;
-        }
-
-        .subtitle {
-          font-size: 1rem;
-        }
-      }
-    }
-
-    .content {
-      gap: 1.5rem;
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .vehicle-detail-container {
-    padding: 1rem 0.5rem;
-
-    .header {
-      .back-button {
-        width: 44px;
-        height: 44px;
-      }
-
-      .title-section {
-        h1 {
-          font-size: 1.75rem;
-        }
-
-        .subtitle {
-          font-size: 0.9rem;
-        }
-      }
-    }
-
-    .content {
-      gap: 1rem;
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr 1fr;
     }
   }
 }

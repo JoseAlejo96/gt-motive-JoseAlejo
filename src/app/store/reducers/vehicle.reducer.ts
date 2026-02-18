@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import * as VehicleActions from '../actions/vehicle.actions';
-import { VehicleState, initialVehicleState } from '../state/vehicle.state';
+import { initialVehicleState } from '../state/vehicle.state';
 
 export const vehicleReducer = createReducer(
     initialVehicleState,

@@ -1,12 +1,12 @@
 <div class="vehicle-detail-container">
     <div class="header">
-        <button mat-fab class="back-button" (click)="goBack()" aria-label="Go back">
+        <button mat-icon-button (click)="goBack()" class="back-button">
             <mat-icon>arrow_back</mat-icon>
         </button>
         @if (selectedMake()) {
         <div class="title-section">
             <h1>{{ selectedMake()!.name }}</h1>
-            <p class="subtitle">Complete vehicle information and specifications</p>
+            <p class="subtitle">Vehicle details and specifications</p>
         </div>
         }
     </div>
