@@ -1,11 +1,13 @@
-import { Component, input } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { VehicleModel } from '../../../../core/interfaces/vehicle.interface';
+import * as VehicleSelectors from '../../../../store/selectors/vehicle.selectors';
 
 @Component({
   selector: 'app-vehicle-models-card',
@@ -22,6 +24,15 @@ import { VehicleModel } from '../../../../core/interfaces/vehicle.interface';
   styleUrl: './vehicle-models-card.component.scss'
 })
 export class VehicleModelsCardComponent {
-  models = input.required<VehicleModel[]>();
-  isLoading = input<boolean>(false);
+  private readonly store = inject(Store);
+
+  models = toSignal(
+    this.store.select(VehicleSelectors.selectModels),
+    { initialValue: [] }
+  );
+
+  isLoading = toSignal(
+    this.store.select(VehicleSelectors.selectModelsLoading),
+    { initialValue: false }
+  );
 }

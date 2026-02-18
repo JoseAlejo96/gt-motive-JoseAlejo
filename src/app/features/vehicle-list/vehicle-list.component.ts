@@ -55,29 +55,29 @@ export class VehicleListComponent implements OnInit, OnDestroy {
     { initialValue: [] }
   );
 
-  isLoading = toSignal(
-    this.store.select(VehicleSelectors.selectMakesLoading),
-    { initialValue: false }
-  );
-
   error = toSignal(
     this.store.select(VehicleSelectors.selectMakesError),
     { initialValue: null }
   );
 
+  isLoading = toSignal(
+    this.store.select(VehicleSelectors.selectMakesLoading),
+    { initialValue: false }
+  );
+
   searchControl = new FormControl('');
   searchValue = signal('');
 
-  hasSearch = computed(() => !!this.searchValue());
-
   noResults = computed(() =>
-    !this.isLoading() && this.filteredMakes().length === 0 && this.hasSearch()
+    !this.isLoading() &&
+    this.filteredMakes().length === 0 &&
+    !!this.searchValue()
   );
 
   resultsCount = computed(() => {
     const total = this.totalMakes().length;
     const filtered = this.filteredMakes().length;
-    return this.hasSearch()
+    return this.searchValue()
       ? `${filtered} of ${total} makes found`
       : `${total} vehicle makes available`;
   });

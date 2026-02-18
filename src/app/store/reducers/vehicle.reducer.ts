@@ -32,23 +32,11 @@ export const vehicleReducer = createReducer(
 
     // Filter Makes - Búsqueda mejorada
     on(VehicleActions.filterMakes, (state, { searchTerm }) => {
-        const normalizedSearch = searchTerm
-            .toLowerCase()
-            .trim()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, ''); // Remover acentos
-
-        const filtered = state.makes.filter(make => {
-            const normalizedMake = make.Make_Name.toLowerCase()
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '');
-            return normalizedMake.includes(normalizedSearch);
-        });
-
-        return {
-            ...state,
-            filteredMakes: filtered
-        };
+        const search = searchTerm.toLowerCase().trim();
+        const filtered = state.makes.filter(make =>
+            make.Make_Name.toLowerCase().includes(search)
+        );
+        return { ...state, filteredMakes: filtered };
     }),
 
     // Select Make

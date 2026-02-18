@@ -16,14 +16,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     provideHttpClient(withFetch()),
-    provideStore({
-      vehicle: vehicleReducer
-    }),
+    provideStore({ vehicle: vehicleReducer }),
     provideEffects([VehicleEffects]),
-    provideStoreDevtools({
-      maxAge: 25,
-      logOnly: !isDevMode(),
-      connectInZone: true
-    })
+    provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() })
   ]
 };

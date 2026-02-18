@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { filter, take } from 'rxjs/operators';
-import { Subject, takeUntil } from 'rxjs';
+import { filter, take, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 // Angular Material
 import { MatIconModule } from '@angular/material/icon';
@@ -40,26 +40,6 @@ export class VehicleDetailComponent implements OnInit, OnDestroy {
   selectedMake = toSignal(
     this.store.select(VehicleSelectors.selectSelectedMake),
     { initialValue: null }
-  );
-
-  vehicleTypes = toSignal(
-    this.store.select(VehicleSelectors.selectVehicleTypes),
-    { initialValue: [] }
-  );
-
-  models = toSignal(
-    this.store.select(VehicleSelectors.selectModels),
-    { initialValue: [] }
-  );
-
-  typesLoading = toSignal(
-    this.store.select(VehicleSelectors.selectVehicleTypesLoading),
-    { initialValue: false }
-  );
-
-  modelsLoading = toSignal(
-    this.store.select(VehicleSelectors.selectModelsLoading),
-    { initialValue: false }
   );
 
   ngOnInit(): void {

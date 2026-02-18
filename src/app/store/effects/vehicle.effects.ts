@@ -1,10 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { of } from 'rxjs';
+import { of, forkJoin } from 'rxjs';
 import { map, catchError, switchMap, withLatestFrom, filter } from 'rxjs/operators';
 import { VehicleApiService } from '../../core/services/vehicle-api.service';
-import { ErrorHandlerService } from '../../core/services/error-handler.service';
 import * as VehicleActions from '../actions/vehicle.actions';
 import * as VehicleSelectors from '../selectors/vehicle.selectors';
 
@@ -13,11 +12,7 @@ export class VehicleEffects {
     private readonly actions$ = inject(Actions);
     private readonly store = inject(Store);
     private readonly vehicleApiService = inject(VehicleApiService);
-    private readonly errorHandler = inject(ErrorHandlerService);
 
-    /**
-     * Effect: Cargar marcas solo si no están en el store
-     */
     loadMakes$ = createEffect(() =>
         this.actions$.pipe(
             ofType(VehicleActions.loadMakes),
@@ -28,74 +23,32 @@ export class VehicleEffects {
                     map(response =>
                         VehicleActions.loadMakesSuccess({ makes: response.Results })
                     ),
-                    catchError(error =>
-                        of(
-                            VehicleActions.loadMakesFailure({
-                                error: this.errorHandler.handleError(error)
-                            })
-                        )
+                    catchError(() =>
+                        of(VehicleActions.loadMakesFailure({ error: 'Error loading makes' }))
                     )
                 )
             )
         )
     );
 
-    /**
-     * Effect: Cargar tipos de vehículos para una marca
-     */
-    loadVehicleTypes$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(VehicleActions.loadVehicleTypes),
-            switchMap(({ makeId }) =>
-                this.vehicleApiService.getVehicleTypesForMake(makeId).pipe(
-                    map(response =>
-                        VehicleActions.loadVehicleTypesSuccess({ types: response.Results })
-                    ),
-                    catchError(error =>
-                        of(
-                            VehicleActions.loadVehicleTypesFailure({
-                                error: this.errorHandler.handleError(error)
-                            })
-                        )
-                    )
-                )
-            )
-        )
-    );
-
-    /**
-     * Effect: Cargar modelos para una marca
-     */
-    loadModels$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(VehicleActions.loadModels),
-            switchMap(({ makeId }) =>
-                this.vehicleApiService.getModelsForMakeId(makeId).pipe(
-                    map(response =>
-                        VehicleActions.loadModelsSuccess({ models: response.Results })
-                    ),
-                    catchError(error =>
-                        of(
-                            VehicleActions.loadModelsFailure({
-                                error: this.errorHandler.handleError(error)
-                            })
-                        )
-                    )
-                )
-            )
-        )
-    );
-
-    /**
-     * Effect: Cargar tipos y modelos cuando se selecciona una marca
-     */
     selectMake$ = createEffect(() =>
         this.actions$.pipe(
             ofType(VehicleActions.selectMake),
-            switchMap(({ makeId }) => [
-                VehicleActions.loadVehicleTypes({ makeId }),
-                VehicleActions.loadModels({ makeId })
-            ])
+            switchMap(({ makeId }) =>
+                forkJoin({
+                    types: this.vehicleApiService.getVehicleTypesForMake(makeId),
+                    models: this.vehicleApiService.getModelsForMakeId(makeId)
+                }).pipe(
+                    switchMap(({ types, models }) => [
+                        VehicleActions.loadVehicleTypesSuccess({ types: types.Results }),
+                        VehicleActions.loadModelsSuccess({ models: models.Results })
+                    ]),
+                    catchError(() => [
+                        VehicleActions.loadVehicleTypesFailure({ error: 'Error loading data' }),
+                        VehicleActions.loadModelsFailure({ error: 'Error loading data' })
+                    ])
+                )
+            )
         )
     );
 }
