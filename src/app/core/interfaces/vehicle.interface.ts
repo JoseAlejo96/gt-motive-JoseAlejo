@@ -38,9 +38,3 @@ export interface VehicleModel {
     Model_ID: number;
     Model_Name: string;
 }
-
-// Estado para el store
-export interface VehicleMakeState {
-    id: number;
-    name: string;
-}

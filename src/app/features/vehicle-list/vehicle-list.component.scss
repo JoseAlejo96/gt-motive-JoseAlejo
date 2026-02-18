@@ -24,10 +24,12 @@
       padding: 0.5rem 1rem;
       background: white;
       border-radius: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       margin-top: 1rem;
 
-      mat-icon { color: #1976d2; }
+      mat-icon {
+        color: #1976d2;
+      }
     }
   }
 
@@ -36,14 +38,27 @@
     margin-bottom: 1.5rem;
   }
 
-  .loading-container, .error-container, .no-results, .empty-state {
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 1rem;
     text-align: center;
-    padding: 3rem 1rem;
 
-    mat-icon {
-      font-size: 48px;
-      width: 48px;
-      height: 48px;
+    mat-spinner {
+      margin-bottom: 1rem;
+    }
+
+    .loading-text {
+      margin: 0;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    .loading-subtext {
+      margin: 0.5rem 0 0 0;
+      color: rgba(0, 0, 0, 0.4);
+      font-size: 0.9rem;
     }
   }
 
@@ -54,20 +69,20 @@
     background: white;
 
     .vehicle-card {
-      margin: 0.5rem;
+      margin: 0.75rem 0.5rem;
       cursor: pointer;
       transition: all 0.2s;
 
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
       }
 
       .card-content {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 1rem;
+        padding: 0.5rem 1rem;
 
         .make-info {
           display: flex;

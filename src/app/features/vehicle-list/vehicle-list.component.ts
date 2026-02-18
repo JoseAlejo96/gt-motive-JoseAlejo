@@ -1,10 +1,11 @@
-import { Component, OnInit, inject, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Subject } from 'rxjs';
 
 // Angular Material
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -39,9 +40,10 @@ import { VehicleMake } from '../../core/interfaces/vehicle.interface';
   templateUrl: './vehicle-list.component.html',
   styleUrl: './vehicle-list.component.scss'
 })
-export class VehicleListComponent implements OnInit {
+export class VehicleListComponent implements OnInit, OnDestroy {
   private readonly store = inject(Store);
   private readonly router = inject(Router);
+  private readonly destroy$ = new Subject<void>();
 
   filteredMakes = toSignal(
     this.store.select(VehicleSelectors.selectFilteredMakes),
@@ -64,8 +66,9 @@ export class VehicleListComponent implements OnInit {
   );
 
   searchControl = new FormControl('');
+  searchValue = signal('');
 
-  hasSearch = computed(() => !!this.searchControl.value);
+  hasSearch = computed(() => !!this.searchValue());
 
   noResults = computed(() =>
     !this.isLoading() && this.filteredMakes().length === 0 && this.hasSearch()
@@ -85,12 +88,22 @@ export class VehicleListComponent implements OnInit {
     this.store.dispatch(VehicleActions.loadMakes());
 
     this.searchControl.valueChanges
-      .pipe(debounceTime(300), distinctUntilChanged())
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
       .subscribe(searchTerm => {
+        this.searchValue.set(searchTerm || '');
         this.store.dispatch(
           VehicleActions.filterMakes({ searchTerm: searchTerm || '' })
         );
       });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onSelectMake(make: VehicleMake): void {
@@ -109,5 +122,6 @@ export class VehicleListComponent implements OnInit {
 
   clearSearch(): void {
     this.searchControl.setValue('');
+    this.searchValue.set('');
   }
 }

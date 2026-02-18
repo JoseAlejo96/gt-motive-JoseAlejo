@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, take } from 'rxjs/operators';
+import { Subject, takeUntil } from 'rxjs';
 
 // Angular Material
 import { MatIconModule } from '@angular/material/icon';
@@ -34,6 +35,7 @@ export class VehicleDetailComponent implements OnInit, OnDestroy {
   private readonly store = inject(Store);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly destroy$ = new Subject<void>();
 
   selectedMake = toSignal(
     this.store.select(VehicleSelectors.selectSelectedMake),
@@ -75,7 +77,8 @@ export class VehicleDetailComponent implements OnInit, OnDestroy {
         .select(VehicleSelectors.selectAllMakes)
         .pipe(
           filter(makes => makes.length > 0),
-          take(1)
+          take(1),
+          takeUntil(this.destroy$)
         )
         .subscribe(makes => {
           const make = makes.find(m => m.Make_ID === makeId);
@@ -95,6 +98,8 @@ export class VehicleDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
     this.store.dispatch(VehicleActions.clearVehicleDetail());
   }
 
