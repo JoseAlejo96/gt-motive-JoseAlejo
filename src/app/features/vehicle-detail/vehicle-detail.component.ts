@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, take } from 'rxjs/operators';
 
 // Angular Material
 import { MatIconModule } from '@angular/material/icon';
@@ -34,7 +35,6 @@ export class VehicleDetailComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  // Signals desde el store
   selectedMake = toSignal(
     this.store.select(VehicleSelectors.selectSelectedMake),
     { initialValue: null }
@@ -63,8 +63,34 @@ export class VehicleDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const makeId = Number(this.route.snapshot.paramMap.get('id'));
 
-    if (!this.selectedMake() && makeId) {
+    if (!makeId) {
       this.router.navigate(['/']);
+      return;
+    }
+
+    if (!this.selectedMake()) {
+      this.store.dispatch(VehicleActions.loadMakes());
+
+      this.store
+        .select(VehicleSelectors.selectAllMakes)
+        .pipe(
+          filter(makes => makes.length > 0),
+          take(1)
+        )
+        .subscribe(makes => {
+          const make = makes.find(m => m.Make_ID === makeId);
+
+          if (make) {
+            this.store.dispatch(
+              VehicleActions.selectMake({
+                makeId: make.Make_ID,
+                makeName: make.Make_Name
+              })
+            );
+          } else {
+            this.router.navigate(['/']);
+          }
+        });
     }
   }
 

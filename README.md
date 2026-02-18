@@ -1,53 +1,36 @@
-# GT Motive - Vehicle Information SPA
+# GT Motive - Vehicle Information App
 
-Angular 19 application for browsing vehicle manufacturers and their specifications using the NHTSA vPIC API.
+Angular 19 SPA for browsing vehicle manufacturers using NHTSA vPIC API.
 
-## 📦 Installation
+## Features
+
+- Vehicle make browser with virtual scroll
+- Real-time search with filtering
+- Detailed vehicle information (types & models)
+- NgRx state management
+- Angular Material UI
+
+## Tech Stack
+
+- Angular 19
+- NgRx 19
+- Angular Material
+- RxJS
+- TypeScript
+
+## Installation
 ```bash
-# Install dependencies
 npm install
-
-# Run development server
 npm start
 ```
 
-## 🏗️ Architecture
+## Architecture
 
-### SOLID Principles Applied
+- **SOLID principles** applied throughout
+- **NgRx** for state management with caching
+- **Standalone components** for better tree-shaking
+- **Signals** for reactive state
 
-- **Single Responsibility**: Each component, service, and module has one clear purpose
-- **Open/Closed**: NgRx patterns allow extension without modification
-- **Liskov Substitution**: Components are interchangeable through interfaces
-- **Interface Segregation**: Specific interfaces for different data types
-- **Dependency Inversion**: Services injected through Angular DI
+## Author
 
-### Project Structure
-```
-src/app/
-├── core/                    # Singleton services and interfaces
-│   ├── services/           # API and business logic services
-│   └── interfaces/         # TypeScript interfaces
-├── shared/                 # Reusable components and pipes
-│   ├── components/        # Shared UI components
-│   └── pipes/            # Custom pipes (highlight, etc.)
-├── features/              # Feature modules
-│   ├── vehicle-list/     # Main list view
-│   └── vehicle-detail/   # Detail view with subcomponents
-└── store/                # NgRx state management
-    ├── actions/         # Action creators
-    ├── reducers/       # State reducers
-    ├── effects/       # Side effects handlers
-    ├── selectors/    # State selectors
-    └── state/       # State interfaces
-```
-
-## 🌐 API
-
-This application uses the [NHTSA vPIC API](https://vpic.nhtsa.dot.gov/api/):
-- `GET /vehicles/GetAllMakes` - Fetch all vehicle makes
-- `GET /vehicles/GetVehicleTypesForMakeId/{id}` - Get vehicle types
-- `GET /vehicles/GetModelsForMakeId/{id}` - Get available models
-
-## 👤 Author
-
-**Jose Alejo**
+Jose Alejo

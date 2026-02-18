@@ -43,7 +43,6 @@ export class VehicleListComponent implements OnInit {
   private readonly store = inject(Store);
   private readonly router = inject(Router);
 
-  // Signals desde el store usando toSignal
   filteredMakes = toSignal(
     this.store.select(VehicleSelectors.selectFilteredMakes),
     { initialValue: [] }
@@ -66,27 +65,23 @@ export class VehicleListComponent implements OnInit {
 
   searchControl = new FormControl('');
 
-  noResults = computed(() => {
-    return (
-      !this.isLoading() &&
-      this.filteredMakes().length === 0 &&
-      this.searchControl.value !== ''
-    );
-  });
+  hasSearch = computed(() => !!this.searchControl.value);
+
+  noResults = computed(() =>
+    !this.isLoading() && this.filteredMakes().length === 0 && this.hasSearch()
+  );
 
   resultsCount = computed(() => {
-    const search = this.searchControl.value;
     const total = this.totalMakes().length;
-    if (!search) {
-      return `${total} vehicle makes available`;
-    }
-    return `${this.filteredMakes().length} of ${total} makes found`;
+    const filtered = this.filteredMakes().length;
+    return this.hasSearch()
+      ? `${filtered} of ${total} makes found`
+      : `${total} vehicle makes available`;
   });
 
   ngOnInit(): void {
     this.store.dispatch(VehicleActions.filterMakes({ searchTerm: '' }));
     this.searchControl.setValue('', { emitEvent: false });
-
     this.store.dispatch(VehicleActions.loadMakes());
 
     this.searchControl.valueChanges
