@@ -34,19 +34,27 @@ export class VehicleEffects {
     selectMake$ = createEffect(() =>
         this.actions$.pipe(
             ofType(VehicleActions.selectMake),
+            map(({ makeId }) => VehicleActions.loadVehicleData({ makeId }))
+        )
+    );
+
+    loadVehicleData$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(VehicleActions.loadVehicleData),
             switchMap(({ makeId }) =>
                 forkJoin({
                     types: this.vehicleApiService.getVehicleTypesForMake(makeId),
                     models: this.vehicleApiService.getModelsForMakeId(makeId)
                 }).pipe(
-                    switchMap(({ types, models }) => [
-                        VehicleActions.loadVehicleTypesSuccess({ types: types.Results }),
-                        VehicleActions.loadModelsSuccess({ models: models.Results })
-                    ]),
-                    catchError(() => [
-                        VehicleActions.loadVehicleTypesFailure({ error: 'Error loading data' }),
-                        VehicleActions.loadModelsFailure({ error: 'Error loading data' })
-                    ])
+                    map(({ types, models }) =>
+                        VehicleActions.loadVehicleDataSuccess({
+                            types: types.Results,
+                            models: models.Results
+                        })
+                    ),
+                    catchError(() =>
+                        of(VehicleActions.loadVehicleDataFailure({ error: 'Error loading data' }))
+                    )
                 )
             )
         )
